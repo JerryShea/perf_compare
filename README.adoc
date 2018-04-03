@@ -1,6 +1,10 @@
 = Results
 
-pretty similar
+Background: Queue does more e.g. indexing, rolling etc.
+
+Takeaways:
+* very similar at 99.99/worst 
+* Agrona consistently better at lower percentiles
 
 == Agrona
 ```
