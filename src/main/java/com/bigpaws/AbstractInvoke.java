@@ -11,13 +11,14 @@ import java.util.function.LongConsumer;
 public abstract class AbstractInvoke implements Invoke {
     protected final Thread consumerThread;
     protected final String payload;
+    protected final LongConsumer consumer;
 
     protected AbstractInvoke(final LongConsumer consumer, String payload) {
         consumerThread = new Thread(() -> {
             AffinityLock lock = Affinity.acquireLock();
             try {
                 while (!Thread.currentThread().isInterrupted()) {
-                    read(consumer);
+                    read();
                     // pauser.pause
                 }
             } finally {
@@ -26,6 +27,7 @@ public abstract class AbstractInvoke implements Invoke {
         });
         consumerThread.setDaemon(true);
         this.payload = payload;
+        this.consumer = consumer;
     }
 
     @Override
@@ -34,5 +36,5 @@ public abstract class AbstractInvoke implements Invoke {
         Thread.sleep(10);
     }
 
-    protected abstract void read(LongConsumer consumer);
+    protected abstract void read();
 }

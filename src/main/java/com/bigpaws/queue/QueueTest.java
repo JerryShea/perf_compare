@@ -40,7 +40,7 @@ public class QueueTest extends AbstractInvoke {
     }
 
     @Override
-    protected void read(LongConsumer consumer) {
+    protected void read() {
         try (DocumentContext dc = tailer.readingDocument()) {
             if (dc.isPresent()) {
                 long sentTime = dc.wire().bytes().readLong();

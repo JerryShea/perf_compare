@@ -3,6 +3,7 @@ package com.bigpaws.agrona;
 import com.bigpaws.AbstractInvoke;
 import org.agrona.ExpandableArrayBuffer;
 import org.agrona.IoUtil;
+import org.agrona.concurrent.MessageHandler;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.concurrent.ringbuffer.OneToOneRingBuffer;
 import org.agrona.concurrent.ringbuffer.RingBufferDescriptor;
@@ -26,6 +27,7 @@ public class AgronaTest extends AbstractInvoke {
     private final FileChannel channel;
     private final OneToOneRingBuffer ringBuffer;
     private final ExpandableArrayBuffer src;
+    private final MessageHandler messageHandler;
 
     AgronaTest(LongConsumer consumer, String payload) throws IOException {
         super(consumer, payload);
@@ -33,10 +35,14 @@ public class AgronaTest extends AbstractInvoke {
         final RandomAccessFile file = new RandomAccessFile(PATH, "rw");
         file.setLength(SIZE);
         this.channel = file.getChannel();
-        MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, SIZE);
-        UnsafeBuffer ub = new UnsafeBuffer(buffer);
+        MappedByteBuffer mbbuffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, SIZE);
+        UnsafeBuffer ub = new UnsafeBuffer(mbbuffer);
         this.ringBuffer = new OneToOneRingBuffer(ub);
         this.src = new ExpandableArrayBuffer();
+        this.messageHandler = (msgTypeId, buffer, index, length) -> {
+            long sentTime = buffer.getLong(index);
+            consumer.accept(sentTime);
+        };
         this.consumerThread.start();
     }
 
@@ -50,11 +56,8 @@ public class AgronaTest extends AbstractInvoke {
     }
 
     @Override
-    protected void read(LongConsumer consumer) {
-        int read = ringBuffer.read((msgTypeId, buffer, index, length) -> {
-            long sentTime = buffer.getLong(index);
-            consumer.accept(sentTime);
-        });
+    protected void read() {
+        /*int read =*/ ringBuffer.read(messageHandler);
     }
 
     @Override

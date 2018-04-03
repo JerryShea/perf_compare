@@ -65,9 +65,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
     </dependencies>
 
     <properties>
-        <cq.version>4.6.81-SNAPSHOT</cq.version>
+        <cq.version>4.6.79</cq.version>
 
-        <agrona.version>0.9.16-SNAPSHOT</agrona.version>
+        <agrona.version>0.9.15</agrona.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
