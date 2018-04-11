@@ -6,8 +6,9 @@ comparison I could find - Agrona's ringbuffer.
 
 Chronicle queue does a lot more than Agrona ringbuffer e.g. indexing, rolling, unbounded etc.
 
-There is a JLBH test for queue and one for Agrona and the test starts up a consumer thread and produces
-messages. We measure the time it takes to get from producer thread to consumer thread.
+There is a JLBH test for queue and one for Agrona and the test starts up a producer thread to generate
+messages, and a consumer thread to read them. The Agrona test uses a memory-mapped file to make it as similar
+as possible to CQ. We measure the time it takes to get from producer thread to consumer thread.
 
 = Results
 
@@ -18,6 +19,8 @@ Agrona vs Queue
 
 The fact that they are pretty much the same at worst says to me that we don't have any lurking issues
 in chronicle queue. Blame the OS!
+
+TODO: test with 2 processes
 
 == Agrona
 ```
