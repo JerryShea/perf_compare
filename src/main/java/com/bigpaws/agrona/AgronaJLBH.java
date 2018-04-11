@@ -1,22 +1,19 @@
 package com.bigpaws.agrona;
 
-import com.bigpaws.AbstractJLBH;
-import com.bigpaws.Invoke;
+import com.bigpaws.BaseJLBH;
 
 import java.io.IOException;
-import java.util.function.LongConsumer;
 
 /**
  * Created by Jerry Shea on 3/04/18.
  */
-public class AgronaJLBH extends AbstractJLBH
+public class AgronaJLBH extends BaseJLBH
 {
-    public static void main(String[] args) throws IOException {
-        AbstractJLBH.run(new AgronaJLBH());
+    public AgronaJLBH() throws IOException {
+        super((longConsumer, s) -> new AgronaTest(longConsumer, s));
     }
 
-    @Override
-    protected Invoke createInvoker(LongConsumer longConsumer, String payload) throws IOException {
-        return new AgronaTest(this::longConsumer, Invoke.PAYLOAD);
+    public static void main(String[] args) throws IOException {
+        BaseJLBH.run(new AgronaJLBH());
     }
 }

@@ -1,22 +1,19 @@
 package com.bigpaws.queue;
 
-import com.bigpaws.AbstractJLBH;
-import com.bigpaws.Invoke;
+import com.bigpaws.BaseJLBH;
 
 import java.io.IOException;
-import java.util.function.LongConsumer;
 
 /**
  * Created by Jerry Shea on 3/04/18.
  */
-public class QueueJLBH extends AbstractJLBH
+public class QueueJLBH extends BaseJLBH
 {
-    public static void main(String[] args) throws IOException {
-        AbstractJLBH.run(new QueueJLBH());
+    public QueueJLBH() throws IOException {
+        super((longConsumer, s) -> new QueueTest(longConsumer, s));
     }
 
-    @Override
-    protected Invoke createInvoker(LongConsumer longConsumer, String payload) throws IOException {
-        return new QueueTest(this::longConsumer, Invoke.PAYLOAD);
+    public static void main(String[] args) throws IOException {
+        BaseJLBH.run(new QueueJLBH());
     }
 }

@@ -1,11 +1,23 @@
+= Background
+
+In order to confirm that there is not some nasty artefact inside of chronicle queue causing the nasty
+high percentile latencies we sometimes see, this is a test of chronicle queue against the simplest possible
+comparison I could find - Agrona's ringbuffer.
+
+Chronicle queue does a lot more than Agrona ringbuffer e.g. indexing, rolling, unbounded etc.
+
+There is a JLBH test for queue and one for Agrona and the test starts up a consumer thread and produces
+messages. We measure the time it takes to get from producer thread to consumer thread.
+
 = Results
 
-Background: Queue does more e.g. indexing, rolling etc.
-
-Takeaways:
+Agrona vs Queue
 
 * very similar at 99.99/worst 
-* Agrona consistently better at lower percentiles
+* Agrona consistently better at lower percentiles which of course is to be expected as it is doing less
+
+The fact that they are pretty much the same at worst says to me that we don't have any lurking issues
+in chronicle queue. Blame the OS!
 
 == Agrona
 ```
