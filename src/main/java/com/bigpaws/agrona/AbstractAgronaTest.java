@@ -4,40 +4,32 @@ import com.bigpaws.AbstractInvoke;
 import org.agrona.ExpandableArrayBuffer;
 import org.agrona.IoUtil;
 import org.agrona.concurrent.MessageHandler;
-import org.agrona.concurrent.UnsafeBuffer;
-import org.agrona.concurrent.ringbuffer.OneToOneRingBuffer;
+import org.agrona.concurrent.ringbuffer.RingBuffer;
 import org.agrona.concurrent.ringbuffer.RingBufferDescriptor;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 
-import java.io.File;
+import java.io.Closeable;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.LongConsumer;
 
 /**
  * Created by Jerry Shea on 3/04/18.
  */
 @State(Scope.Benchmark)
-public class AgronaTest extends AbstractInvoke {
-    private static final long SIZE = (2 << 20) + RingBufferDescriptor.TRAILER_LENGTH;
-    private static final String PATH = IoUtil.tmpDirName() + "/eg-ring-buffer";
-    private final FileChannel channel;
-    private final OneToOneRingBuffer ringBuffer;
+public abstract class AbstractAgronaTest extends AbstractInvoke {
+    protected static final long SIZE = (2 << 20) + RingBufferDescriptor.TRAILER_LENGTH;
+    protected static final String PATH = IoUtil.tmpDirName() + "/eg-ring-buffer";
+    protected final List<Closeable> closeables = new ArrayList<>();
+    private final RingBuffer ringBuffer;
     private final ExpandableArrayBuffer src;
     private final MessageHandler messageHandler;
 
-    AgronaTest(LongConsumer consumer, String payload) throws IOException {
+    AbstractAgronaTest(LongConsumer consumer, String payload) throws IOException {
         super(consumer, payload);
-        IoUtil.delete(new File(PATH), true);
-        final RandomAccessFile file = new RandomAccessFile(PATH, "rw");
-        file.setLength(SIZE);
-        this.channel = file.getChannel();
-        MappedByteBuffer mbbuffer = channel.map(FileChannel.MapMode.READ_WRITE, 0, SIZE);
-        UnsafeBuffer ub = new UnsafeBuffer(mbbuffer);
-        this.ringBuffer = new OneToOneRingBuffer(ub);
+        ringBuffer = createRingBuffer();
         this.src = new ExpandableArrayBuffer();
         this.messageHandler = (msgTypeId, buffer, index, length) -> {
             long sentTime = buffer.getLong(index);
@@ -45,6 +37,8 @@ public class AgronaTest extends AbstractInvoke {
         };
         this.consumerThread.start();
     }
+
+    protected abstract RingBuffer createRingBuffer() throws IOException;
 
     @Override
     public void test(long startTimeNS) {
@@ -63,7 +57,7 @@ public class AgronaTest extends AbstractInvoke {
     @Override
     public void close() throws Exception {
         super.close();
-        channel.close();
+        net.openhft.chronicle.core.io.Closeable.closeQuietly(closeables);
     }
 
     @Override

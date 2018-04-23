@@ -52,6 +52,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
             <version>${cq.version}</version>
         </dependency>
         <dependency>
+            <groupId>software.chronicle</groupId>
+            <artifactId>chronicle-queue-enterprise</artifactId>
+            <version>${cqe.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.openjdk.jmh</groupId>
             <artifactId>jmh-core</artifactId>
             <version>${jmh.version}</version>
@@ -66,7 +72,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
     <properties>
         <cq.version>4.6.79</cq.version>
-
+        <cqe.version>1.4.54-SNAPSHOT</cqe.version>
         <agrona.version>0.9.15</agrona.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
