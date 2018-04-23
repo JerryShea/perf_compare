@@ -20,7 +20,7 @@ import java.util.function.LongConsumer;
  */
 @State(Scope.Benchmark)
 public abstract class AbstractAgronaTest extends AbstractInvoke {
-    protected static final long SIZE = (2 << 20) + RingBufferDescriptor.TRAILER_LENGTH;
+    protected static final long SIZE = (32 << 20) + RingBufferDescriptor.TRAILER_LENGTH;
     protected static final String PATH = IoUtil.tmpDirName() + "/eg-ring-buffer";
     protected final List<Closeable> closeables = new ArrayList<>();
     private final RingBuffer ringBuffer;

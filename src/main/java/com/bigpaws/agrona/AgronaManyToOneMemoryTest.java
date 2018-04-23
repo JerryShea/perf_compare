@@ -1,6 +1,6 @@
 package com.bigpaws.agrona;
 
-import org.agrona.ExpandableArrayBuffer;
+import org.agrona.ExpandableDirectByteBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
 import org.agrona.concurrent.ringbuffer.RingBuffer;
@@ -18,7 +18,7 @@ public class AgronaManyToOneMemoryTest extends AbstractAgronaTest {
 
     @Override
     protected RingBuffer createRingBuffer() throws IOException {
-        UnsafeBuffer ub = new UnsafeBuffer(new ExpandableArrayBuffer());
+        UnsafeBuffer ub = new UnsafeBuffer(new ExpandableDirectByteBuffer((int) SIZE));
         return new ManyToOneRingBuffer(ub);
     }
 }

@@ -1,6 +1,7 @@
 package com.bigpaws.queue;
 
 import com.bigpaws.AbstractInvoke;
+import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.RollCycles;
@@ -30,6 +31,17 @@ public class QueueTest extends AbstractInvoke {
         tailer = queue.createTailer();
         appender = queue.acquireAppender();
         consumerThread.start();
+        if (Boolean.getBoolean("pretouch")) {
+            Thread thread = new Thread(() -> {
+                ExcerptAppender appender = queue.acquireAppender();
+                while (! Thread.currentThread().isInterrupted()) {
+                    Jvm.pause(100);
+                    appender.pretouch();
+                }
+            });
+            thread.setDaemon(true);
+            thread.start();
+        }
     }
 
     @Override

@@ -4,7 +4,7 @@ In order to confirm that there is not some nasty artefact inside of chronicle qu
 high percentile latencies we sometimes see, this is a test of chronicle queue against the simplest possible
 comparison I could find - Agrona's ringbuffer.
 
-Chronicle queue does a lot more than Agrona ringbuffer e.g. indexing, rolling, unbounded etc.
+Chronicle queue does a lot more than Agrona ringbuffer e.g. indexing, rolling, unbounded, multi-thread publish & consume etc.
 
 There is a JLBH test for queue and another for Agrona and each test starts up a consumer thread to read messages,
 and generates them in the JLBH thread. The Agrona test uses a memory-mapped file to make it as similar
@@ -18,32 +18,113 @@ Agrona vs Queue
 * Agrona consistently better at lower percentiles which of course is to be expected as it is doing less
 
 The fact that they are pretty much the same at worst says to me that we don't have any lurking issues
-in chronicle queue. Blame the OS!
+in chronicle queue.
 
 TODO: test with 2 processes
 
-== Agrona
+== AgronaManyToOneFileJLBH
 ```
 -------------------------------- SUMMARY (end to end)------------------------------------------------------------
 Percentile   run1         run2         run3         run4         run5         run6         run7      % Variation
-50:             0.18         0.15         0.14         0.14         0.14         0.14         0.15         3.67
-90:             0.21         0.18         0.17         0.17         0.17         0.18         0.20         8.51
-99:             0.28         0.21         0.20         0.20         0.20         0.22         0.24        11.56
-99.9:           1.50         0.34         0.23         1.95         0.24         7.81         8.45        96.01
-99.99:          9.98         8.96         8.45         8.06         8.45        10.50        10.50        16.74
-worst:        116.74        11.01         9.98         9.98        15.62        12.03        10.50        27.33
--------------------------------------------------------------------------------------------------------------------
+50:             0.19         0.14         0.14         0.14         0.14         0.15         0.16         7.08
+90:             0.23         0.18         0.17         0.18         0.17         0.18         0.17         3.01
+99:             0.28         0.20         0.20         0.20         0.20         0.20         0.20         2.65
+99.9:           4.99         0.47         0.22         0.26         0.24         4.99         0.24        93.53
+99.99:         16.13         7.81         8.45         8.06         8.45         9.47         8.45        12.44
+worst:         96.26        33.79        10.50        10.50        16.13        10.50        10.50        59.67
 ```
 
 == Queue
 ```
 -------------------------------- SUMMARY (end to end)------------------------------------------------------------
 Percentile   run1         run2         run3         run4         run5         run6         run7      % Variation
-50:             0.33         0.30         0.30         0.31         0.30         0.28         0.22        21.80
-90:             0.38         0.33         0.33         0.34         0.33         0.33         0.28        13.22
-99:             1.57         1.57         0.38         0.41         0.38         1.50         0.39        67.88
-99.9:           6.27         8.96         3.14         3.39         2.62         3.65         2.50        63.32
-99.99:         27.14         9.47         8.45         9.47         8.96         8.96         8.96         7.48
-worst:        129.02        31.23        13.06        13.06        10.50        10.50        13.06        56.84
+50:             0.31         0.28         0.28         0.28         0.28         0.28         0.21        17.62
+90:             0.34         0.33         0.31         0.33         0.31         0.31         0.26        13.91
+99:             1.57         1.44         1.50         0.39         1.50         1.57         3.14        82.35
+99.9:           6.53         5.50         4.99         4.03         8.45         7.81         9.47        47.35
+99.99:         27.14         9.98         8.96         9.47         9.47         9.98        10.50        10.26
+worst:        135.17        37.89        17.92        13.06        10.50        11.01        10.50        63.50
 -------------------------------------------------------------------------------------------------------------------
+```
+
+== AgronaManyToOneMemoryJLBH
+```
+-------------------------------- SUMMARY (end to end)------------------------------------------------------------
+Percentile   run1         run2         run3         run4         run5         run6         run7      % Variation
+50:             0.20         0.16         0.15         0.16         0.15         0.16         0.16         6.72
+90:             0.24         0.20         0.19         0.19         0.19         0.19         0.20         2.76
+99:             0.28         0.24         0.21         0.21         0.21         0.22         4.99        93.76
+99.9:           1.25         0.30         0.24         0.24         3.26         7.30         9.47        96.31
+99.99:         12.54         8.45         8.45         8.06         8.06         9.98        10.50        16.74
+worst:        129.02        92.16        10.50        10.50        46.08        11.01        12.03        83.84
+```
+
+== ErbJLBH
+```
+-------------------------------- SUMMARY (end to end)------------------------------------------------------------
+Percentile   run1         run2         run3         run4         run5         run6         run7      % Variation
+50:             0.38         0.34         0.36         0.38         0.36         0.36         0.36         5.84
+90:             0.42         0.39         0.41         0.41         0.39         0.41         0.41         2.65
+99:             0.47         0.44         0.46         0.46         0.46         0.47         4.03        84.48
+99.9:           0.91         0.82         0.53         0.53         2.37         7.81         9.47        91.87
+99.99:         10.50        10.50         9.47         9.47         8.96        10.50        10.50        10.26
+worst:        135.17       135.17       135.17       135.17       135.17       135.17        96.26        21.23
+```
+
+= Results longer-running
+
+These tests compare purely in-memory (AgronaManyToOneMemoryJLBH vs ErbJLBH) and memory-mapped-file-backed
+(AgronaManyToOneFileJLBH vs Queue) for a larger, longer-running workload. Each run is
+5,000,000 iterations of a 124 byte message = 620MB of data.
+
+We can see that outliers are much worse for the memory-mapped-file-backed file tests.
+
+== AgronaManyToOneFileJLBH
+```
+-------------------------------- SUMMARY (end to end)------------------------------------------------------------
+Percentile   run1         run2      % Variation
+50:             0.17         0.17         0.00
+90:             0.20         0.20         0.00
+99:             1.70         2.02         0.00
+99.9:           8.96    553648.13         0.00
+99.99:         10.50    721420.29         0.00
+99.999:        13.06    721420.29         0.00
+```
+
+== Queue
+```
+-------------------------------- SUMMARY (end to end)------------------------------------------------------------
+Percentile   run1         run2         run3         run4         run5         run6      % Variation
+50:             0.28         0.28         0.28         0.28         0.28         0.28         0.00
+90:             0.33         0.33         0.33         0.33         0.36         0.33         6.11
+99:             2.11         1.89         1.63         1.89         1.63         1.76         9.47
+99.9:           9.47         9.47         8.45         9.47         8.45         8.96         7.48
+99.99:        499.71       319.49       352.26       217.09       208.90       192.51        35.62
+99.999:      3080.19      2555.90      2555.90      2424.83      2424.83      2424.83         3.48
+worst:       4849.66      2949.12      3080.19      2949.12      3211.26      3080.19         5.59
+```
+
+== AgronaManyToOneMemoryJLBH
+```
+-------------------------------- SUMMARY (end to end)------------------------------------------------------------
+Percentile   run1         run2      % Variation
+50:             0.16         0.17         0.00
+90:             0.19         0.20         0.00
+99:             0.24         0.24         0.00
+99.9:           8.06         6.78         0.00
+99.99:          9.98         9.98         0.00
+99.999:        12.03        10.50         0.00
+```
+
+== ErbJLBH
+```
+-------------------------------- SUMMARY (end to end)------------------------------------------------------------
+Percentile   run1         run2         run3         run4         run5         run6      % Variation
+50:             0.49         0.49         0.49         0.53         0.59         0.69        21.46
+90:             0.53         0.53         0.56         0.59         0.72         0.78        24.43
+99:             2.37         0.69         4.03         0.69         0.82         0.85        76.42
+99.9:           9.47         9.47         9.98         9.47         8.96         9.47         7.08
+99.99:         11.01        11.01        11.01        11.01        11.01        11.01         0.00
+99.999:      2555.90      1474.56       335.87      1540.10      1146.88      1605.63        71.59
+worst:       4849.66      3997.70      2686.98      2818.05      3473.41      3997.70        24.54
 ```

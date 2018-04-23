@@ -17,16 +17,17 @@ public class BaseJLBH implements JLBHTask
     private final Invoke invoker;
 
     public BaseJLBH(BiFunctionThrows<LongConsumer, String, Invoke, IOException> createInvoker) throws IOException {
-        this.invoker = createInvoker.apply(this::longConsumer, Invoke.PAYLOAD);
+        this.invoker = createInvoker.apply(this::longConsumer, Boolean.getBoolean("payload2") ? Invoke.PAYLOAD2 : Invoke.PAYLOAD);
     }
 
     public static void run(JLBHTask task) {
         JLBHOptions options = new JLBHOptions().
                 accountForCoordinatedOmmission(true).
-                warmUpIterations(20_000).
+                warmUpIterations(100_000).
                 iterations(Integer.getInteger("iterations", 100_000)).
                 throughput(Integer.getInteger("throughput", 10_000)).
                 runs(Integer.getInteger("runs", 3)).
+                recordOSJitter(Boolean.getBoolean("record.os.jitter")).
                 jlbhTask(task);
         jlbh = new JLBH(options);
         jlbh.start();
