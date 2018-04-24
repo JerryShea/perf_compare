@@ -29,7 +29,7 @@ public class Monitor extends Thread {
         Jvm.pause(TimeUnit.SECONDS.toMillis(TIMING_MONITOR_DELAY_SECS));
         while (! enabled)
             Jvm.pause(1);
-        while (thread.isAlive()) {
+        while (thread.isAlive() && enabled) {
             long time = startTimeNs.getAsLong();
             if (time != Long.MIN_VALUE) {
                 long latency = System.nanoTime() - time;

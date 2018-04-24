@@ -47,6 +47,7 @@ public class BaseJLBH implements JLBHTask
     @Override
     public void complete() {
         try {
+            Monitor.enabled = false;
             invoker.close();
         } catch (Exception e) {
             Jvm.rethrow(e);
