@@ -40,6 +40,11 @@ public class BaseJLBH implements JLBHTask
     }
 
     @Override
+    public void warmedUp() {
+        Monitor.enabled = true;
+    }
+
+    @Override
     public void complete() {
         try {
             invoker.close();
