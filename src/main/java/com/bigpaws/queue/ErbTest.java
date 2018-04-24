@@ -26,7 +26,6 @@ public class ErbTest extends AbstractInvoke {
         write = NativeBytes.nativeBytes(128);
         erbBytes = NativeBytesStore.nativeStoreWithFixedCapacity(BytesRingBuffer.sizeFor(32 << 20));
         ringBuffer = BytesRingBuffer.newInstance(erbBytes);
-//        ringBuffer.clear();
         consumerThread.start();
     }
 

@@ -14,18 +14,7 @@ public abstract class AbstractInvoke implements Invoke {
     protected final LongConsumer consumer;
 
     protected AbstractInvoke(final LongConsumer consumer, String payload) {
-        consumerThread = new Thread(() -> {
-            AffinityLock lock = Affinity.acquireLock();
-            try {
-                while (!Thread.currentThread().isInterrupted()) {
-                    read();
-                    // pauser.pause
-                }
-            } finally {
-                lock.release();
-            }
-        });
-        consumerThread.setDaemon(true);
+        consumerThread = new ConsumerThread();
         this.payload = payload;
         this.consumer = consumer;
     }
@@ -37,4 +26,31 @@ public abstract class AbstractInvoke implements Invoke {
     }
 
     protected abstract void read();
+
+    private class ConsumerThread extends Thread {
+        private volatile long startTimeNs;
+
+        ConsumerThread() {
+            this.setDaemon(true);
+            this.setName(this.getClass().getSimpleName());
+        }
+
+        @Override
+        public void run() {
+            AffinityLock lock = Affinity.acquireLock();
+            new Monitor(Thread.currentThread(), this::startTimeNS).start();
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    startTimeNs = System.nanoTime();
+                    read();
+                }
+            } finally {
+                lock.release();
+            }
+        }
+
+        private long startTimeNS() {
+            return startTimeNs;
+        }
+    }
 }

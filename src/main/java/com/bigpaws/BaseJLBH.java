@@ -15,6 +15,7 @@ public class BaseJLBH implements JLBHTask
 {
     private static JLBH jlbh;
     private final Invoke invoker;
+    private volatile long startTimeNS;
 
     public BaseJLBH(BiFunctionThrows<LongConsumer, String, Invoke, IOException> createInvoker) throws IOException {
         this.invoker = createInvoker.apply(this::longConsumer, Boolean.getBoolean("payload2") ? Invoke.PAYLOAD2 : Invoke.PAYLOAD);
@@ -35,6 +36,7 @@ public class BaseJLBH implements JLBHTask
 
     @Override
     public void init(JLBH jlbh) {
+        new Monitor(Thread.currentThread(), this::startTimeNS).start();
     }
 
     @Override
@@ -52,6 +54,11 @@ public class BaseJLBH implements JLBHTask
 
     @Override
     public void run(long startTimeNS) {
+        this.startTimeNS = startTimeNS;
         invoker.test(startTimeNS);
+    }
+
+    public long startTimeNS() {
+        return this.startTimeNS;
     }
 }
