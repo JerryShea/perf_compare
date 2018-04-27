@@ -44,6 +44,7 @@ public abstract class AbstractInvoke implements Invoke {
                 while (!Thread.currentThread().isInterrupted()) {
                     startTimeNs = System.nanoTime();
                     read();
+                    startTimeNs = Long.MIN_VALUE;
                 }
             } finally {
                 lock.release();

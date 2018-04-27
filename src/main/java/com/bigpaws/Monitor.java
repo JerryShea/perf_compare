@@ -11,7 +11,7 @@ import java.util.function.LongSupplier;
  * Created by Jerry Shea on 24/04/18.
  */
 public class Monitor extends Thread {
-    static final long TIMING_MONITOR_LIMIT_NS = TimeUnit.MILLISECONDS.toNanos(Integer.getInteger("monitor.limit.ms", 1));
+    static final long TIMING_MONITOR_LIMIT_NS = Integer.getInteger("monitor.limit.ns", 1_000_000);
     static final int TIMING_MONITOR_DELAY_SECS = Integer.getInteger("monitor.delay.secs", 2);
     public static volatile boolean enabled = false;
     private static final Logger LOG = LoggerFactory.getLogger(Monitor.class);
