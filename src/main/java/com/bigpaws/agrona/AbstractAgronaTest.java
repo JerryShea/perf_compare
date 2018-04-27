@@ -1,6 +1,7 @@
 package com.bigpaws.agrona;
 
 import com.bigpaws.AbstractInvoke;
+import com.bigpaws.Invoke;
 import org.agrona.ExpandableArrayBuffer;
 import org.agrona.IoUtil;
 import org.agrona.concurrent.MessageHandler;
@@ -20,7 +21,7 @@ import java.util.function.LongConsumer;
  */
 @State(Scope.Benchmark)
 public abstract class AbstractAgronaTest extends AbstractInvoke {
-    protected static final long SIZE = (32 << 20) + RingBufferDescriptor.TRAILER_LENGTH;
+    protected static final long SIZE = AbstractInvoke.BASE_BUFFER_SIZE + RingBufferDescriptor.TRAILER_LENGTH;
     protected static final String PATH = IoUtil.tmpDirName() + "/eg-ring-buffer";
     protected final List<Closeable> closeables = new ArrayList<>();
     private final RingBuffer ringBuffer;
@@ -31,6 +32,8 @@ public abstract class AbstractAgronaTest extends AbstractInvoke {
         super(consumer, payload);
         ringBuffer = createRingBuffer();
         this.src = new ExpandableArrayBuffer();
+        src.putLong(0, Long.MIN_VALUE);
+        src.putBytes(Invoke.LONG_LENGTH, payload.getBytes());
         this.messageHandler = (msgTypeId, buffer, index, length) -> {
             long sentTime = buffer.getLong(index);
             consumer.accept(sentTime);
@@ -43,7 +46,6 @@ public abstract class AbstractAgronaTest extends AbstractInvoke {
     @Override
     public void test(long startTimeNS) {
         src.putLong(0, startTimeNS);
-        src.putStringWithoutLengthAscii(LONG_LENGTH, payload);
         boolean ok = ringBuffer.write(99, src, 0, payload.length() + LONG_LENGTH);
         if (! ok)
             throw new IllegalStateException("Could not send " + this.toString());

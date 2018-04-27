@@ -1,6 +1,7 @@
 package com.bigpaws.queue;
 
 import com.bigpaws.AbstractInvoke;
+import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
@@ -13,6 +14,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.function.LongConsumer;
 
 /**
@@ -23,6 +25,7 @@ public class QueueTest extends AbstractInvoke {
     private static final String PATH = IoUtil.tmpDirName() + "/queue";
     private final ExcerptTailer tailer;
     private final ExcerptAppender appender;
+    private final Bytes<ByteBuffer> bytes;
 
     QueueTest(LongConsumer consumer, String payload) {
         super(consumer, payload);
@@ -30,6 +33,8 @@ public class QueueTest extends AbstractInvoke {
         final SingleChronicleQueue queue = SingleChronicleQueueBuilder.binary(PATH).rollCycle(RollCycles.LARGE_HOURLY_XSPARSE).build();
         tailer = queue.createTailer();
         appender = queue.acquireAppender();
+        bytes = Bytes.elasticByteBuffer(128);
+        bytes.writeLong(Long.MIN_VALUE).write(payload.getBytes());
         consumerThread.start();
         if (Boolean.getBoolean("pretouch")) {
             Thread thread = new Thread(() -> {
@@ -39,6 +44,7 @@ public class QueueTest extends AbstractInvoke {
                     appender.pretouch();
                 }
             });
+            thread.setName("pretouch");
             thread.setDaemon(true);
             thread.start();
         }
@@ -47,7 +53,8 @@ public class QueueTest extends AbstractInvoke {
     @Override
     public void test(long startTimeNS) {
         try (DocumentContext dc = appender.writingDocument()) {
-            dc.wire().bytes().writeLong(startTimeNS).write8bit(payload);
+            bytes.writeLong(0, startTimeNS);
+            dc.wire().bytes().write(bytes);
         }
     }
 

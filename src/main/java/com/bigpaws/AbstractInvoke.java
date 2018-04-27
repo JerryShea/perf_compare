@@ -9,6 +9,7 @@ import java.util.function.LongConsumer;
  * Created by Jerry Shea on 3/04/18.
  */
 public abstract class AbstractInvoke implements Invoke {
+    public static final int BASE_BUFFER_SIZE = 32 << 20;
     protected final Thread consumerThread;
     protected final String payload;
     protected final LongConsumer consumer;

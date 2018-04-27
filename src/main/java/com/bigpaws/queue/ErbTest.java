@@ -24,15 +24,15 @@ public class ErbTest extends AbstractInvoke {
         super(consumer, payload);
         read = Bytes.elasticByteBuffer();
         write = NativeBytes.nativeBytes(128);
-        erbBytes = NativeBytesStore.nativeStoreWithFixedCapacity(BytesRingBuffer.sizeFor(32 << 20));
+        write.writeLong(Long.MIN_VALUE).write(payload.getBytes());
+        erbBytes = NativeBytesStore.nativeStoreWithFixedCapacity(BytesRingBuffer.sizeFor(AbstractInvoke.BASE_BUFFER_SIZE));
         ringBuffer = BytesRingBuffer.newInstance(erbBytes);
         consumerThread.start();
     }
 
     @Override
     public void test(long startTimeNS) {
-        write.writePosition(0);
-        write.writeLong(startTimeNS).write8bit(payload);
+        write.writeLong(0, startTimeNS);
         write.readLimit(write.writePosition());
         write.readPosition(0);
         boolean ok = ringBuffer.offer(write);
