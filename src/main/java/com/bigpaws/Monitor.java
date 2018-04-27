@@ -37,7 +37,8 @@ public class Monitor extends Thread {
                     StringBuilder out = new StringBuilder().append("THIS IS NOT AN ERROR, but a profile of the thread, \"").append(thread.getName()).append("\" blocked for ").append(latency / 1000000).append(" ms. ");
                     Jvm.trimStackTrace(out, thread.getStackTrace());
                     String outString = out.toString();
-                    if (! outString.contains("net.openhft.chronicle.core.jlbh.JLBH.end"))
+                    if (! (outString.contains("net.openhft.chronicle.core.jlbh.JLBH.end") ||
+                           outString.contains("JLBH.java:153")))
                         LOG.info(outString);
                 }
             }
