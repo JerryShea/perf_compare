@@ -30,7 +30,9 @@ public class QueueTest extends AbstractInvoke {
     QueueTest(LongConsumer consumer, String payload) {
         super(consumer, payload);
         IoUtil.delete(new File(PATH), true);
-        final SingleChronicleQueue queue = SingleChronicleQueueBuilder.binary(PATH).rollCycle(RollCycles.LARGE_HOURLY_XSPARSE).build();
+        SingleChronicleQueueBuilder builder = SingleChronicleQueueBuilder.binary(PATH).rollCycle(RollCycles.LARGE_HOURLY_XSPARSE);
+        builder.blockSize((int) Long.getLong("block.size", builder.blockSize()).longValue());
+        SingleChronicleQueue queue = builder.build();
         tailer = queue.createTailer();
         appender = queue.acquireAppender();
         bytes = Bytes.elasticByteBuffer(128);
