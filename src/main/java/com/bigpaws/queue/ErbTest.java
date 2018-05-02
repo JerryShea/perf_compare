@@ -8,8 +8,6 @@ import net.openhft.chronicle.bytes.NativeBytesStore;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 
-import java.util.function.LongConsumer;
-
 /**
  * Created by Jerry Shea on 3/04/18.
  */
@@ -20,7 +18,7 @@ public class ErbTest extends AbstractInvoke {
     private final Bytes write;
     private final NativeBytesStore erbBytes;
 
-    ErbTest(LongConsumer consumer, String payload) {
+    ErbTest(TwoLongConsumer consumer, String payload) {
         super(consumer, payload);
         read = Bytes.elasticByteBuffer();
         write = NativeBytes.nativeBytes(128);
@@ -41,11 +39,11 @@ public class ErbTest extends AbstractInvoke {
     }
 
     @Override
-    protected void read() {
+    protected void read(long startReadTime) {
         read.clear();
         if (ringBuffer.read(read)) {
             long sentTime = read.readLong();
-            consumer.accept(sentTime);
+            consumer.accept(startReadTime, sentTime);
         }
     }
 

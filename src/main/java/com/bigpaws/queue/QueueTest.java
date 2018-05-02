@@ -15,7 +15,6 @@ import org.openjdk.jmh.annotations.State;
 
 import java.io.File;
 import java.nio.ByteBuffer;
-import java.util.function.LongConsumer;
 
 /**
  * Created by Jerry Shea on 3/04/18.
@@ -27,7 +26,7 @@ public class QueueTest extends AbstractInvoke {
     private final ExcerptAppender appender;
     private final Bytes<ByteBuffer> bytes;
 
-    QueueTest(LongConsumer consumer, String payload) {
+    QueueTest(TwoLongConsumer consumer, String payload) {
         super(consumer, payload);
         IoUtil.delete(new File(PATH), true);
         SingleChronicleQueueBuilder builder = SingleChronicleQueueBuilder.binary(PATH).rollCycle(RollCycles.LARGE_HOURLY_XSPARSE);
@@ -61,11 +60,11 @@ public class QueueTest extends AbstractInvoke {
     }
 
     @Override
-    protected void read() {
+    protected void read(long startReadTime) {
         try (DocumentContext dc = tailer.readingDocument()) {
             if (dc.isPresent()) {
                 long sentTime = dc.wire().bytes().readLong();
-                consumer.accept(sentTime);
+                consumer.accept(startReadTime, sentTime);
             }
         }
     }

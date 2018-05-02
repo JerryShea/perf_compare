@@ -14,7 +14,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.LongConsumer;
 
 /**
  * Created by Jerry Shea on 3/04/18.
@@ -27,8 +26,9 @@ public abstract class AbstractAgronaTest extends AbstractInvoke {
     private final RingBuffer ringBuffer;
     private final ExpandableArrayBuffer src;
     private final MessageHandler messageHandler;
+    private long startReadTime;
 
-    AbstractAgronaTest(LongConsumer consumer, String payload) throws IOException {
+    AbstractAgronaTest(TwoLongConsumer consumer, String payload) throws IOException {
         super(consumer, payload);
         ringBuffer = createRingBuffer();
         this.src = new ExpandableArrayBuffer();
@@ -36,7 +36,7 @@ public abstract class AbstractAgronaTest extends AbstractInvoke {
         src.putBytes(Invoke.LONG_LENGTH, payload.getBytes());
         this.messageHandler = (msgTypeId, buffer, index, length) -> {
             long sentTime = buffer.getLong(index);
-            consumer.accept(sentTime);
+            consumer.accept(startReadTime, sentTime);
         };
         this.consumerThread.start();
     }
@@ -52,7 +52,8 @@ public abstract class AbstractAgronaTest extends AbstractInvoke {
     }
 
     @Override
-    protected void read() {
+    protected void read(long startReadTime) {
+        this.startReadTime = startReadTime;
         /*int read =*/ ringBuffer.read(messageHandler);
     }
 

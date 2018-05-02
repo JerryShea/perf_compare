@@ -10,13 +10,12 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.function.LongConsumer;
 
 /**
  * Created by Jerry Shea on 23/04/18.
  */
 public class AgronaManyToOneFileTest extends AbstractAgronaTest {
-    public AgronaManyToOneFileTest(LongConsumer longConsumer, String s) throws IOException {
+    public AgronaManyToOneFileTest(TwoLongConsumer longConsumer, String s) throws IOException {
         super(longConsumer, s);
     }
 

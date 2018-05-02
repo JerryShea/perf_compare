@@ -6,13 +6,12 @@ import org.agrona.concurrent.ringbuffer.ManyToOneRingBuffer;
 import org.agrona.concurrent.ringbuffer.RingBuffer;
 
 import java.io.IOException;
-import java.util.function.LongConsumer;
 
 /**
  * Created by Jerry Shea on 23/04/18.
  */
 public class AgronaManyToOneMemoryTest extends AbstractAgronaTest {
-    public AgronaManyToOneMemoryTest(LongConsumer longConsumer, String s) throws IOException {
+    public AgronaManyToOneMemoryTest(TwoLongConsumer longConsumer, String s) throws IOException {
         super(longConsumer, s);
     }
 
