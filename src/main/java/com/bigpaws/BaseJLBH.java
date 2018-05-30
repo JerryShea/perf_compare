@@ -38,8 +38,6 @@ public class BaseJLBH implements JLBHTask
 
     @Override
     public void init(JLBH jlbh) {
-        new Monitor(Thread.currentThread(), this::startTimeNS).start();
-
         writerProbe = jlbh.addProbe("writer");
         readerProbe = jlbh.addProbe("reader");
     }
