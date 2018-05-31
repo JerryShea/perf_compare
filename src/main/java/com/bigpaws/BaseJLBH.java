@@ -5,14 +5,16 @@ import net.openhft.chronicle.core.jlbh.JLBH;
 import net.openhft.chronicle.core.jlbh.JLBHOptions;
 import net.openhft.chronicle.core.jlbh.JLBHTask;
 import net.openhft.chronicle.core.util.NanoSampler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 /**
  * Created by Jerry Shea on 3/04/18.
  */
-public class BaseJLBH implements JLBHTask
-{
+public class BaseJLBH implements JLBHTask {
+    private static final Logger LOG = LoggerFactory.getLogger(BaseJLBH.class);
     private static JLBH jlbh;
     private final Invoke invoker;
     private NanoSampler writerProbe;
@@ -40,6 +42,7 @@ public class BaseJLBH implements JLBHTask
     public void init(JLBH jlbh) {
         writerProbe = jlbh.addProbe("writer");
         readerProbe = jlbh.addProbe("reader");
+        LOG.info(">>> Starting {}", this.getClass().getSimpleName());
     }
 
     @Override
@@ -52,6 +55,7 @@ public class BaseJLBH implements JLBHTask
         try {
             Monitor.enabled = false;
             invoker.close();
+            LOG.info("<<< Finished {}", this.getClass().getSimpleName());
         } catch (Exception e) {
             Jvm.rethrow(e);
         }
