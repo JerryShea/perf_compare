@@ -64,7 +64,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
         <dependency>
             <groupId>net.openhft</groupId>
             <artifactId>chronicle-bytes</artifactId>
-            <version>1.16.1-SNAPSHOT</version>
+            <version>1.16.15</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -86,9 +86,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
     </dependencies>
 
     <properties>
-        <cq.version>4.16.0</cq.version>
+        <cq.version>5.16.3</cq.version>
         <cq3.version>3.6.6</cq3.version>
-        <cqe.version>1.16.1-SNAPSHOT</cqe.version>
+        <cqe.version>1.16.7</cqe.version>
         <agrona.version>0.9.15</agrona.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

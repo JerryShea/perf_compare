@@ -33,6 +33,7 @@ public class BaseJLBH implements JLBHTask {
                 throughput(Integer.getInteger("throughput", 10_000)).
                 runs(Integer.getInteger("runs", 3)).
                 recordOSJitter(Boolean.getBoolean("record.os.jitter")).
+                pauseAfterWarmupMS(50).
                 jlbhTask(task);
         jlbh = new JLBH(options);
         jlbh.start();
