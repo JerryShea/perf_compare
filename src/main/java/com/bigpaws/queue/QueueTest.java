@@ -7,14 +7,15 @@ import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.RollCycles;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
-import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 import net.openhft.chronicle.wire.DocumentContext;
 import org.agrona.IoUtil;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
+import software.chronicle.enterprise.queue.EnterpriseChronicleQueueBuilder;
 
 import java.io.File;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 /**
  * Created by Jerry Shea on 3/04/18.
@@ -29,15 +30,21 @@ public class QueueTest extends AbstractInvoke {
     QueueTest(TwoLongConsumer consumer, String payload) {
         super(consumer, payload);
         IoUtil.delete(new File(PATH), true);
-        SingleChronicleQueueBuilder builder = SingleChronicleQueueBuilder.binary(PATH).rollCycle(RollCycles.LARGE_HOURLY_XSPARSE);
+        String pretouch = System.getProperty("pretouch");
+        System.out.println("pretouch: " + pretouch);
+        EnterpriseChronicleQueueBuilder builder = EnterpriseChronicleQueueBuilder.binary(new File(PATH));
         builder.blockSize((int) Long.getLong("block.size", builder.blockSize()).longValue());
+        if (Objects.equals(pretouch, "process"))
+            builder.enablePreloader(100);
+        else
+            builder.rollCycle(RollCycles.LARGE_HOURLY_XSPARSE);// TODO: out of process preloader to support
         SingleChronicleQueue queue = builder.build();
         tailer = queue.createTailer();
         appender = queue.acquireAppender();
         bytes = Bytes.elasticByteBuffer(128);
         bytes.writeLong(Long.MIN_VALUE).write(payload.getBytes());
         consumerThread.start();
-        if (Boolean.getBoolean("pretouch")) {
+        if (Objects.equals(pretouch, "thread")) {
             Thread thread = new Thread(() -> {
                 ExcerptAppender appender = queue.acquireAppender();
                 while (! Thread.currentThread().isInterrupted()) {
