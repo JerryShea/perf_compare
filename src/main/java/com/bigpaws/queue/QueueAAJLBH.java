@@ -10,10 +10,11 @@ import java.io.IOException;
 public class QueueAAJLBH extends BaseJLBH
 {
     public QueueAAJLBH() throws IOException {
-        super((longConsumer, s) -> new QueueAATest(longConsumer, s));
+        super((longConsumer, s) -> new QueueTest(longConsumer, s));
     }
 
     public static void main(String[] args) throws IOException {
+        System.setProperty("rb", "true");
         BaseJLBH.run(new QueueAAJLBH());
     }
 }

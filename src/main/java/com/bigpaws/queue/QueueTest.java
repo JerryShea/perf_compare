@@ -3,6 +3,7 @@ package com.bigpaws.queue;
 import com.bigpaws.AbstractInvoke;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.core.Jvm;
+import net.openhft.chronicle.queue.BufferMode;
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.RollCycles;
@@ -31,13 +32,17 @@ public class QueueTest extends AbstractInvoke {
         super(consumer, payload);
         IoUtil.delete(new File(PATH), true);
         String pretouch = System.getProperty("pretouch");
-        System.out.println("pretouch: " + pretouch);
+        Boolean rb = Boolean.getBoolean("rb");
+        System.out.println("pretouch: " + pretouch + " RB: " + rb);
         EnterpriseChronicleQueueBuilder builder = EnterpriseChronicleQueueBuilder.binary(new File(PATH));
         builder.blockSize((int) Long.getLong("block.size", builder.blockSize()).longValue());
+        builder.rollCycle(RollCycles.LARGE_HOURLY_XSPARSE);
         if (Objects.equals(pretouch, "process"))
             builder.enablePreloader(100);
-        else
-            builder.rollCycle(RollCycles.LARGE_HOURLY_XSPARSE);// TODO: out of process preloader to support
+        if (rb) {
+            builder.readBufferMode(BufferMode.Asynchronous);
+            builder.writeBufferMode(BufferMode.Asynchronous);
+        }
         SingleChronicleQueue queue = builder.build();
         tailer = queue.createTailer();
         appender = queue.acquireAppender();

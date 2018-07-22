@@ -11,9 +11,11 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.agrona:agrona:0.9.15" level="project" />
-    <orderEntry type="library" name="Maven: net.openhft:chronicle-queue:5.16.9-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: net.openhft:chronicle-core:1.16.12" level="project" />
-    <orderEntry type="library" name="Maven: net.openhft:chronicle-wire:1.16.11-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: net.openhft:chronicle-queue:5.16.10-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: net.openhft:chronicle-core:1.16.13" level="project" />
+    <orderEntry type="library" name="Maven: com.intellij:annotations:12.0" level="project" />
+    <orderEntry type="library" name="Maven: net.openhft:chronicle-bytes:1.16.20" level="project" />
+    <orderEntry type="library" name="Maven: net.openhft:chronicle-wire:1.16.12-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: net.openhft:chronicle-threads:1.16.3" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.4" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
@@ -33,7 +35,7 @@
     <orderEntry type="library" name="Maven: net.openhft:affinity:3.0.5" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna:4.2.1" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:4.2.1" level="project" />
-    <orderEntry type="library" name="Maven: software.chronicle:chronicle-queue-enterprise:1.16.11-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: software.chronicle:chronicle-queue-enterprise:1.16.12-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: net.openhft:chronicle-engine:1.15.0" level="project" />
     <orderEntry type="library" name="Maven: net.openhft:chronicle-map:2.4.17" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.xstream:xstream:1.4.9" level="project" />
@@ -41,8 +43,6 @@
     <orderEntry type="library" name="Maven: xpp3:xpp3_min:1.1.4c" level="project" />
     <orderEntry type="library" name="Maven: org.xerial.snappy:snappy-java:1.1.4" level="project" />
     <orderEntry type="library" name="Maven: net.openhft:chronicle-network:1.16.3" level="project" />
-    <orderEntry type="library" name="Maven: net.openhft:chronicle-bytes:1.16.15" level="project" />
-    <orderEntry type="library" name="Maven: com.intellij:annotations:12.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.openjdk.jmh:jmh-core:1.20" level="project" />
     <orderEntry type="library" name="Maven: net.sf.jopt-simple:jopt-simple:4.6" level="project" />
