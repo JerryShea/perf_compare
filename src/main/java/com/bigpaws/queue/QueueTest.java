@@ -23,18 +23,23 @@ import java.util.Objects;
  */
 @State(Scope.Benchmark)
 public class QueueTest extends AbstractInvoke {
-    private static final String PATH = IoUtil.tmpDirName() + "/queue";
     private final ExcerptTailer tailer;
     private final ExcerptAppender appender;
     private final Bytes<ByteBuffer> bytes;
 
     QueueTest(TwoLongConsumer consumer, String payload) {
+        this(consumer, payload, ".");
+    }
+
+    QueueTest(TwoLongConsumer consumer, String payload, String basedir) {
         super(consumer, payload);
-        IoUtil.delete(new File(PATH), true);
+        String path = basedir + "/queue";
+        IoUtil.delete(new File(path), true);
+        System.out.println("queue file " + path);
         String pretouch = System.getProperty("pretouch");
         Boolean rb = Boolean.getBoolean("rb");
         System.out.println("pretouch: " + pretouch + " RB: " + rb);
-        EnterpriseChronicleQueueBuilder builder = EnterpriseChronicleQueueBuilder.binary(new File(PATH));
+        EnterpriseChronicleQueueBuilder builder = EnterpriseChronicleQueueBuilder.binary(new File(path));
         builder.blockSize((int) Long.getLong("block.size", builder.blockSize()).longValue());
         builder.rollCycle(RollCycles.LARGE_HOURLY_XSPARSE);
         if (Objects.equals(pretouch, "process"))
