@@ -8,11 +8,11 @@ import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.RollCycles;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueue;
+import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 import net.openhft.chronicle.wire.DocumentContext;
 import org.agrona.IoUtil;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
-import software.chronicle.enterprise.queue.EnterpriseChronicleQueueBuilder;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -39,7 +39,7 @@ public class QueueTest extends AbstractInvoke {
         String pretouch = System.getProperty("pretouch");
         Boolean rb = Boolean.getBoolean("rb");
         System.out.println("pretouch: " + pretouch + " RB: " + rb);
-        EnterpriseChronicleQueueBuilder builder = EnterpriseChronicleQueueBuilder.binary(new File(path));
+        SingleChronicleQueueBuilder builder = SingleChronicleQueueBuilder.binary(new File(path));
         builder.blockSize((int) Long.getLong("block.size", builder.blockSize()).longValue());
         builder.rollCycle(RollCycles.LARGE_HOURLY_XSPARSE);
         if (Objects.equals(pretouch, "process"))
