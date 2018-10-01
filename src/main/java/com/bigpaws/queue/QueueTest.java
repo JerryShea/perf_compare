@@ -42,6 +42,7 @@ public class QueueTest extends AbstractInvoke {
         SingleChronicleQueueBuilder builder = SingleChronicleQueueBuilder.binary(new File(path));
         builder.blockSize((int) Long.getLong("block.size", builder.blockSize()).longValue());
         builder.rollCycle(RollCycles.LARGE_HOURLY_XSPARSE);
+        builder.bufferCapacity(Integer.getInteger("buffer", 32 << 10));
         if (Objects.equals(pretouch, "process"))
             builder.enablePreloader(100);
         if (rb) {
